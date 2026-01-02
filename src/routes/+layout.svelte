@@ -1,15 +1,20 @@
 <script lang="ts">
 	import '../app.css';
 	import type { LayoutServerData } from './$types';
-	import { DiscordIcon, Home, UserCircle, LogOut } from '$lib/components/icons';
+	import { DiscordIcon, Home, } from '$lib/components/icons';
 	import { Toaster } from 'svelte-french-toast';
 	import ProfileDropdown from '$lib/components/ProfileDropdown.svelte';
 
-	export let data: LayoutServerData;
+	interface Props {
+		data: LayoutServerData;
+		children?: import('svelte').Snippet;
+	}
+
+	let { data, children }: Props = $props();
 </script>
 
 <Toaster />
-<div class="container">
+<div class="2xl:max-w-350 container mx-auto px-8">
 	<nav class="my-3 flex items-center justify-between rounded bg-zinc-800 p-3">
 		<div class="flex">
 			<a class="btn btn-secondary gap-2" href="/">
@@ -27,5 +32,5 @@
 			{/if}
 		</div>
 	</nav>
-	<slot />
+	{@render children?.()}
 </div>

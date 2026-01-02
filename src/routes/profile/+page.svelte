@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Table from '$lib/components/ui/table';
 	import type { PageServerData } from './$types';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import dayJs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { invalidateAll } from '$app/navigation';
@@ -9,11 +9,15 @@
 	import toast from 'svelte-french-toast';
 	dayJs.extend(relativeTime);
 
-	export let data: PageServerData;
-	const host = $page.url.origin;
-	$: limit = Number($page.url.searchParams.get('limit')) || 10;
-	$: totalPages = Math.ceil(data.total[0].count / limit);
-	$: currentPage = (Number($page.url.searchParams.get('skip')) || 0) / limit;
+	interface Props {
+		data: PageServerData;
+	}
+
+	let { data }: Props = $props();
+	let host = $derived(page.url.origin);
+	let limit = $derived(Number(page.url.searchParams.get('limit')) || 10);
+	let totalPages = $derived(Math.ceil(data.total[0].count / limit));
+	let currentPage = $derived((Number(page.url.searchParams.get('skip')) || 0) / limit);
 
 	async function deleteEntry(slug: string) {
 		toast.promise(
@@ -66,18 +70,17 @@
 	<Table.Root class="w-full">
 		<Table.Header class="bg-zinc-700">
 			<Table.Row>
-				<Table.Head
-					class="w-[250px] rounded-tl border-r-[1px] border-dotted border-zinc-500 px-4 py-2"
+				<Table.Head class="w-62.5 rounded-tl border-r border-dotted border-zinc-500 px-4 py-2"
 					>Slug</Table.Head
 				>
-				<Table.Head class="border-r-[1px] border-dotted border-zinc-500 px-4 py-2">URL</Table.Head>
-				<Table.Head class="w-[175px] border-r-[1px] border-dotted border-zinc-500 px-4 py-2"
+				<Table.Head class="border-r border-dotted border-zinc-500 px-4 py-2">URL</Table.Head>
+				<Table.Head class="w-43.75 border-r border-dotted border-zinc-500 px-4 py-2"
 					>When</Table.Head
 				>
-				<Table.Head class="w-[75px] border-r-[1px] border-dotted border-zinc-500 px-4 py-2">
+				<Table.Head class="w-18.75 border-r border-dotted border-zinc-500 px-4 py-2">
 					Clicks
 				</Table.Head>
-				<Table.Head class="w-[150px] rounded-tr border-dotted border-zinc-500 px-4 py-2 text-center"
+				<Table.Head class="w-37.5 rounded-tr border-dotted border-zinc-500 px-4 py-2 text-center"
 					>Actions</Table.Head
 				>
 			</Table.Row>
@@ -85,13 +88,9 @@
 		{#if data.urls.length === 0}
 			<Table.Body class="bg-zinc-900">
 				<Table.Row>
-					<Table.Cell></Table.Cell>
-					<Table.Cell class="text-center font-medium">
+					<Table.Cell colspan={5} class="rounded-b text-center font-medium">
 						<p>You haven't created any short URLs yet.</p>
 					</Table.Cell>
-					<Table.Cell></Table.Cell>
-					<Table.Cell></Table.Cell>
-					<Table.Cell></Table.Cell>
 				</Table.Row>
 			</Table.Body>
 		{:else}
@@ -99,19 +98,19 @@
 				{#each data.urls as url, i}
 					<Table.Row>
 						<Table.Cell
-							class="border-r-[1px] border-dotted border-zinc-500 px-4 py-2 font-medium {i ===
+							class="border-r border-dotted border-zinc-500 px-4 py-2 font-medium {i ===
 							data.urls.length - 1
 								? 'rounded-bl'
 								: ''}"
 							><button
 								type="button"
-								on:click={() => copyUrl(`${host}/${url.slug}`)}
-								class="cursor-pointer select-none transition-colors hover:text-blue-400 active:text-green-400"
+								onclick={() => copyUrl(`${host}/${url.slug}`)}
+								class="cursor-pointer transition-colors select-none hover:text-blue-400 active:text-green-400"
 							>
 								{url.slug}
 							</button></Table.Cell
 						>
-						<Table.Cell class="border-r-[1px] border-dotted border-zinc-500 px-4 py-2 font-medium"
+						<Table.Cell class="border-r border-dotted border-zinc-500 px-4 py-2 font-medium"
 							><a
 								href={url.destination}
 								target="_blank"
@@ -119,12 +118,12 @@
 								>{url.destination}</a
 							></Table.Cell
 						>
-						<Table.Cell class="border-r-[1px] border-dotted border-zinc-500 px-4 py-2"
+						<Table.Cell class="border-r border-dotted border-zinc-500 px-4 py-2"
 							><span class="font-medium">
 								{dayJs(url.createdAt).fromNow()}
 							</span></Table.Cell
 						>
-						<Table.Cell class="border-r-[1px] border-dotted border-zinc-500 px-4 py-2 text-center">
+						<Table.Cell class="border-r border-dotted border-zinc-500 px-4 py-2 text-center">
 							<span>
 								{url.clicks}
 							</span>
@@ -135,8 +134,8 @@
 								: ''}"
 						>
 							<button
-								on:click={() => deleteEntry(url.slug)}
-								class="rounded bg-red-400 px-2 py-2 transition-colors hover:bg-red-300"
+								onclick={() => deleteEntry(url.slug)}
+								class="cursor-pointer rounded bg-red-400 px-2 py-2 transition-colors hover:bg-red-300"
 								><Trash2 size="18" class="text-red-950" /></button
 							>
 						</Table.Cell>
@@ -149,7 +148,7 @@
 		Hint: click on the slug cell content to copy the short URL for that item.
 	</p>
 	{#if totalPages > 0}
-		<ul class="mb-2 mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-6">
+		<ul class="mt-4 mb-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-6">
 			{#each Array(totalPages) as _, index}
 				<li class="">
 					<a

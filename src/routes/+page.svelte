@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import toast from 'svelte-french-toast';
-	import type { PageData, ActionData } from './$types';
-	import SuperDebug, { superForm } from 'sveltekit-superforms';
+	import type { PageData } from './$types';
+	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { schema } from './schema';
 	import { Field, Control, Label, Description, FieldErrors } from 'formsnap';
@@ -23,8 +23,12 @@
 		});
 	}
 
-	export let data: PageData;
-	const host = $page.url.origin;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
+	let host = $derived(page.url.origin);
 	const form = superForm(data.form, {
 		validators: zodClient(schema)
 	});
@@ -36,41 +40,45 @@
 </svelte:head>
 
 <div class="flex flex-col items-center gap-4 rounded bg-zinc-800 p-6">
-	<form class="flex w-full max-w-[400px] flex-col gap-1" method="post" use:enhance>
+	<form class="flex w-full max-w-100 flex-col gap-1" method="post" use:enhance>
 		<Field {form} name="destination">
-			<Control let:attrs>
-				<Label class="font-medium">Destination</Label>
-				<input
-					class="w-full rounded bg-neutral-600 p-2 selection:bg-green-200 selection:text-green-950"
-					{...attrs}
-					type="text"
-					bind:value={$formData.destination}
-				/>
+			<Control>
+				{#snippet children({ attrs })}
+					<Label class="font-medium">Destination</Label>
+					<input
+						class="w-full rounded bg-neutral-600 p-2 selection:bg-green-200 selection:text-green-950"
+						{...attrs}
+						type="text"
+						bind:value={$formData.destination}
+					/>
+				{/snippet}
 			</Control>
 			<div>
 				<Description class="text-sm italic"
 					>The destination where the URL will redirect to.</Description
 				>
-				<FieldErrors class="font-medium italic text-red-500" />
+				<FieldErrors class="font-medium text-red-500 italic" />
 			</div>
 		</Field>
 		{#if data.user.isAllowedCustomSlugs}
 			<Field {form} name="slug">
-				<Control let:attrs>
-					<Label class="font-medium">Slug</Label>
-					<input
-						class="w-full rounded bg-neutral-600 p-2 selection:bg-green-200 selection:text-green-950 disabled:bg-neutral-700"
-						{...attrs}
-						type="text"
-						disabled={!data.user.isAllowedCustomSlugs}
-						bind:value={$formData.slug}
-					/>
+				<Control>
+					{#snippet children({ attrs })}
+						<Label class="font-medium">Slug</Label>
+						<input
+							class="w-full rounded bg-neutral-600 p-2 selection:bg-green-200 selection:text-green-950 disabled:bg-neutral-700"
+							{...attrs}
+							type="text"
+							disabled={!data.user.isAllowedCustomSlugs}
+							bind:value={$formData.slug}
+						/>
+					{/snippet}
 				</Control>
 				<div>
 					<Description class="text-sm italic"
 						>The URL identifier. Randomly generated if not specified.
 					</Description>
-					<FieldErrors class="font-medium italic text-red-500" />
+					<FieldErrors class="font-medium text-red-500 italic" />
 				</div>
 			</Field>
 		{/if}
@@ -82,7 +90,7 @@
 				<button
 					type="button"
 					class="btn-secondary w-fit cursor-pointer rounded px-4 py-2 font-medium transition-colors"
-					on:click={() => copyUrl(`${host}/${$message}`)}
+					onclick={() => copyUrl(`${host}/${$message}`)}
 				>
 					{host}/{$message}
 				</button>
