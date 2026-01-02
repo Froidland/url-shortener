@@ -1,9 +1,14 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
-<script>
-	export let size = '24';
+<script lang="ts">
+	import type { HTMLAttributes } from 'svelte/elements';
+
+	type Props = HTMLAttributes<SVGElement> & {
+		size?: string;
+	};
+
+	let { size = '24', ...rest }: Props = $props();
 </script>
 
-<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" {...$$props}
+<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" {...rest}
 	><g
 		fill="none"
 		stroke="currentColor"
