@@ -1,22 +1,25 @@
 import { fail, message, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
-import { schema } from './schema';
 import { generateRandomString } from 'oslo/crypto';
 import { db } from '$lib/server/db';
 import { urls } from '$lib/server/db/schema';
+import { schema } from './schema.js';
+import { zod4} from 'sveltekit-superforms/adapters';
+
 
 const SLUG_ALPHABET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 const DISALLOWED_SLUGS = ['api', 'profile'];
 
+
+
 export async function load() {
 	return {
-		form: await superValidate(zod(schema))
+		form: await superValidate(zod4(schema))
 	};
 }
 
 export const actions = {
 	default: async ({ locals, request }) => {
-		const form = await superValidate(request, zod(schema));
+		const form = await superValidate(request, zod4(schema));
 
 		if (!form.valid) {
 			return fail(400, { form });

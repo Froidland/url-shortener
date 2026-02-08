@@ -3,9 +3,9 @@
 	import toast from 'svelte-french-toast';
 	import type { PageData } from './$types';
 	import { superForm } from 'sveltekit-superforms';
-	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { schema } from './schema';
+	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { Field, Control, Label, Description, FieldErrors } from 'formsnap';
+	import { schema } from './schema';
 
 	async function copyUrl(url: string) {
 		try {
@@ -23,14 +23,14 @@
 		});
 	}
 
-	interface Props {
+	type Props = {
 		data: PageData;
-	}
+	};
 
 	let { data }: Props = $props();
 	let host = $derived(page.url.origin);
 	const form = superForm(data.form, {
-		validators: zodClient(schema)
+		validators: zod4Client(schema)
 	});
 	const { form: formData, enhance, message } = form;
 </script>
@@ -43,13 +43,13 @@
 	<form class="flex w-full max-w-100 flex-col gap-1" method="post" use:enhance>
 		<Field {form} name="destination">
 			<Control>
-				{#snippet children({ attrs })}
-					<Label class="font-medium">Destination</Label>
+				{#snippet children({ props })}
+					<Label class="font-medium">{props.name}</Label>
 					<input
 						class="w-full rounded bg-neutral-600 p-2 selection:bg-green-200 selection:text-green-950"
-						{...attrs}
 						type="text"
 						bind:value={$formData.destination}
+						{...props}
 					/>
 				{/snippet}
 			</Control>
@@ -63,14 +63,14 @@
 		{#if data.user.isAllowedCustomSlugs}
 			<Field {form} name="slug">
 				<Control>
-					{#snippet children({ attrs })}
+					{#snippet children({ props })}
 						<Label class="font-medium">Slug</Label>
 						<input
 							class="w-full rounded bg-neutral-600 p-2 selection:bg-green-200 selection:text-green-950 disabled:bg-neutral-700"
-							{...attrs}
 							type="text"
 							disabled={!data.user.isAllowedCustomSlugs}
 							bind:value={$formData.slug}
+							{...props}
 						/>
 					{/snippet}
 				</Control>
