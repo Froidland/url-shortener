@@ -29,6 +29,7 @@
 
 	let { data }: Props = $props();
 	let host = $derived(page.url.origin);
+	// svelte-ignore state_referenced_locally Intentional
 	const form = superForm(data.form, {
 		validators: zod4Client(schema)
 	});
