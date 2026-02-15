@@ -45,7 +45,7 @@
 		<Field {form} name="destination">
 			<Control>
 				{#snippet children({ props })}
-					<Label class="font-medium">{props.name}</Label>
+					<Label class="font-medium">Destination</Label>
 					<input
 						class="w-full rounded bg-neutral-600 p-2 selection:bg-green-200 selection:text-green-950"
 						type="text"
