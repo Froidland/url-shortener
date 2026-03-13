@@ -1,15 +1,16 @@
 import { fail, message, superValidate } from 'sveltekit-superforms';
-import { generateRandomString } from 'oslo/crypto';
+import { randomInt } from 'crypto';
 import { db } from '$lib/server/db';
 import { urls } from '$lib/server/db/schema';
 import { schema } from './schema.js';
-import { zod4} from 'sveltekit-superforms/adapters';
-
+import { zod4 } from 'sveltekit-superforms/adapters';
 
 const SLUG_ALPHABET = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 const DISALLOWED_SLUGS = ['api', 'profile'];
 
-
+function generateRandomString(length: number, alphabet: string): string {
+	return Array.from({ length }, () => alphabet[randomInt(alphabet.length)]).join('');
+}
 
 export async function load() {
 	return {

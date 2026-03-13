@@ -10,7 +10,7 @@ export default defineConfig({
 		table: 'migrations',
 		schema: './src/lib/server/db/schema.ts'
 	},
-	out: 'migrations',
+	out: './src/lib/server/db/migrations/',
 	strict: true,
 	verbose: true
 });

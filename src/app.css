@@ -7,28 +7,30 @@
 
 @utility btn {
 	display: inline-flex;
-	height: 2.25rem;
+	height: 2rem;
 	align-items: center;
 	justify-content: center;
-	border-radius: 0.25rem;
+	border-radius: 2px;
 	font-weight: 500;
-	padding-left: 1rem;
-	padding-right: 1rem;
-	padding-top: 1rem;
-	padding-bottom: 1rem;
-	@apply transition-colors disabled:opacity-50;
+	font-size: 0.875rem;
+	padding-left: 0.875rem;
+	padding-right: 0.875rem;
+	padding-top: 0;
+	padding-bottom: 0;
+	letter-spacing: 0.01em;
+	@apply transition-colors disabled:opacity-40;
 }
 
 @utility btn-primary {
-	@apply bg-green-300 text-green-950 hover:bg-green-200;
+	@apply bg-green-400 text-green-950 hover:bg-green-300 active:bg-green-500;
 }
 
 @utility btn-secondary {
-	@apply bg-blue-300 text-blue-950 hover:bg-blue-200;
+	@apply border border-zinc-600 bg-zinc-700 text-zinc-100 hover:border-zinc-500 hover:bg-zinc-600 active:bg-zinc-800;
 }
 
 @utility btn-destructive {
-	@apply bg-red-400 text-red-950 hover:bg-red-300;
+	@apply border border-red-800 bg-transparent text-red-400 hover:border-red-600 hover:bg-red-950 active:bg-red-900;
 }
 
 :root {
@@ -133,9 +135,25 @@
 @layer base {
 	* {
 		@apply border-border;
+		box-sizing: border-box;
 	}
 
 	body {
-		@apply bg-zinc-900 text-foreground;
+		@apply bg-zinc-950 text-zinc-100;
+		font-family:
+			ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
+			monospace;
+		font-size: 0.875rem;
+		line-height: 1.6;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	::selection {
+		@apply bg-green-400 text-green-950;
+	}
+
+	input,
+	textarea {
+		font-family: inherit;
 	}
 }

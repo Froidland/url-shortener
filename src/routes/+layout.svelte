@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import type { LayoutServerData } from './$types';
-	import { DiscordIcon, Home, } from '$lib/components/icons';
+	import { DiscordIcon, Home } from '$lib/components/icons';
 	import { Toaster } from 'svelte-french-toast';
 	import ProfileDropdown from '$lib/components/ProfileDropdown.svelte';
 
@@ -14,23 +14,31 @@
 </script>
 
 <Toaster />
-<div class="2xl:max-w-350 container mx-auto px-8">
-	<nav class="my-3 flex items-center justify-between rounded bg-zinc-800 p-3">
-		<div class="flex">
-			<a class="btn btn-secondary gap-2" href="/">
-				<Home size="18" /> <span class="hidden sm:inline">Home</span>
-			</a>
-		</div>
-		<div class="flex gap-2">
-			{#if !data.user.isLoggedIn}
-				<a href="/api/oauth/discord" class="btn btn-secondary gap-2">
-					<DiscordIcon size="24" />
-					Sign in with Discord
+<div class="flex min-h-screen flex-col">
+	<nav class="border-b border-zinc-800 bg-zinc-950">
+		<div class="container mx-auto flex h-12 items-center justify-between px-6 2xl:max-w-350">
+			<div class="flex items-center gap-4">
+				<a
+					class="flex items-center gap-1.5 text-xs text-zinc-400 transition-colors hover:text-zinc-100"
+					href="/"
+				>
+					<Home size="14" /> <span class="hidden sm:inline">Home</span>
 				</a>
-			{:else}
-				<ProfileDropdown />
-			{/if}
+			</div>
+			<div class="flex items-center gap-2">
+				{#if !data.user.isLoggedIn}
+					<a href="/api/oauth/discord" class="btn btn-secondary gap-2 text-xs">
+						<DiscordIcon size="16" />
+						<span class="hidden sm:inline">Sign in with Discord</span>
+						<span class="sm:hidden">Sign in</span>
+					</a>
+				{:else}
+					<ProfileDropdown />
+				{/if}
+			</div>
 		</div>
 	</nav>
-	{@render children?.()}
+	<main class="container mx-auto flex-1 px-6 py-8 2xl:max-w-350">
+		{@render children?.()}
+	</main>
 </div>

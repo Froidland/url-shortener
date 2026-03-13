@@ -1,5 +1,5 @@
 import { dev } from '$app/environment';
-import { discordAuth } from '$lib/server/lucia.js';
+import { discordAuth } from '$lib/server/auth.js';
 import { redirect } from '@sveltejs/kit';
 import { generateState } from 'arctic';
 
