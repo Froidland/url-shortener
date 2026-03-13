@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Trash2 } from '$lib/components/icons';
 	import * as Table from '$lib/components/ui/table';
+	import { deleteUrl } from '$lib/remote/urls.remote';
 	import dayjs from 'dayjs';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import toast from 'svelte-french-toast';
@@ -10,17 +10,7 @@
 
 	async function deleteEntry(slug: string) {
 		toast.promise(
-			(async () => {
-				const res = await fetch(`/api/url/${slug}`, {
-					method: 'DELETE'
-				});
-
-				if (!res.ok) {
-					throw new Error('An error occurred while deleting the URL.');
-				}
-
-				await invalidateAll();
-			})(),
+			deleteUrl({ slug }),
 			{
 				loading: 'Deleting URL...',
 				success: 'URL deleted!',
