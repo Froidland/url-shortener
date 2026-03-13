@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db/index.js';
 import { urls } from '$lib/server/db/schema.js';
-import { urlRedis } from '$lib/server/redis.js';
+import { cache } from '$lib/server/cache.js';
 import { json } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
 
@@ -12,7 +12,7 @@ export async function DELETE({ locals, params }) {
 	}
 
 	try {
-		await urlRedis.del(params.id);
+		await cache.delete({ key: `slug:${params.id}` });
 
 		await db
 			.update(urls)

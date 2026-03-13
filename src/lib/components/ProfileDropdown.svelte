@@ -6,22 +6,22 @@
 </script>
 
 <DropdownMenu.Root>
-	<DropdownMenu.Trigger>
-		<button class="btn btn-secondary cursor-pointer gap-2">
-			<UserCircle size="18" /> <span class="hidden sm:inline">Profile</span>
-		</button>
+	<DropdownMenu.Trigger class="btn btn-secondary cursor-pointer gap-1.5 text-xs">
+		<UserCircle size="14" /> <span class="hidden sm:inline">Profile</span>
 	</DropdownMenu.Trigger>
-	<DropdownMenu.Content class="w-57.5 z-10 mt-2 items-center rounded bg-zinc-700 p-2 shadow-xl">
-		<a href={resolve('/profile')}
-			><DropdownMenu.Item
-				class="mb-2 flex items-center gap-2 rounded-[6px] bg-zinc-800 px-4 py-3 transition-colors hover:bg-zinc-900"
-				><FormatListBulletedIcon /> <span class="font-bold">My URLs</span></DropdownMenu.Item
-			></a
-		>
+	<DropdownMenu.Content
+		class="z-10 mt-1 w-48 border border-zinc-800 bg-zinc-950 p-0 shadow-2xl shadow-black/60"
+	>
+		<a href={resolve('/profile')}>
+			<DropdownMenu.Item
+				class="flex cursor-pointer items-center gap-2.5 border-b border-zinc-800 px-3 py-2.5 text-xs text-zinc-300 transition-colors hover:bg-zinc-900 hover:text-zinc-100"
+				><FormatListBulletedIcon /> <span class="font-medium">My URLs</span></DropdownMenu.Item
+			>
+		</a>
 		<a href={resolve('/api/auth/logout')}>
 			<DropdownMenu.Item
-				class="flex items-center gap-2 rounded-[6px] bg-zinc-800 px-4 py-3 transition-colors hover:bg-zinc-900"
-				><LogOut size="18" /> <span class="font-bold">Log out</span></DropdownMenu.Item
+				class="flex cursor-pointer items-center gap-2.5 px-3 py-2.5 text-xs text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-red-400"
+				><LogOut size="14" /> <span class="font-medium">Log out</span></DropdownMenu.Item
 			>
 		</a>
 	</DropdownMenu.Content>

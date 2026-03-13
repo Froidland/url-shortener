@@ -15,6 +15,14 @@ const config = {
 		env: {
 			publicPrefix: 'PUBLIC_',
 			privatePrefix: 'PRIVATE_'
+		},
+		experimental: {
+			remoteFunctions: true
+		}
+	},
+	compilerOptions: {
+		experimental: {
+			async: true
 		}
 	}
 };

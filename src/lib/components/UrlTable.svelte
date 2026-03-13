@@ -1,0 +1,143 @@
+<script lang="ts">
+	import { invalidateAll } from '$app/navigation';
+	import { page } from '$app/state';
+	import { Trash2 } from '$lib/components/icons';
+	import * as Table from '$lib/components/ui/table';
+	import dayjs from 'dayjs';
+	import relativeTime from 'dayjs/plugin/relativeTime';
+	import toast from 'svelte-french-toast';
+	dayjs.extend(relativeTime);
+
+	async function deleteEntry(slug: string) {
+		toast.promise(
+			(async () => {
+				const res = await fetch(`/api/url/${slug}`, {
+					method: 'DELETE'
+				});
+
+				if (!res.ok) {
+					throw new Error('An error occurred while deleting the URL.');
+				}
+
+				await invalidateAll();
+			})(),
+			{
+				loading: 'Deleting URL...',
+				success: 'URL deleted!',
+				error: 'An error occurred while deleting the URL.'
+			},
+			{
+				style:
+					'background: #09090b; color: #f4f4f5; border: 1px solid #27272a; border-radius: 2px; font-family: ui-monospace, monospace; font-size: 0.8rem;'
+			}
+		);
+	}
+
+	async function copyUrl(url: string) {
+		try {
+			await navigator.clipboard.writeText(url);
+		} catch (error) {
+			toast.error('An error occurred while copying the URL.', {
+				style:
+					'background: #09090b; color: #f4f4f5; border: 1px solid #27272a; border-radius: 2px; font-family: ui-monospace, monospace; font-size: 0.8rem;'
+			});
+
+			return;
+		}
+
+		toast.success('URL copied!', {
+			style:
+				'background: #09090b; color: #f4f4f5; border: 1px solid #27272a; border-radius: 2px; font-family: ui-monospace, monospace; font-size: 0.8rem;'
+		});
+	}
+
+	type Props = {
+		data: {
+			slug: string;
+			destination: string;
+			clicks: number;
+			createdAt: Date;
+		}[];
+	};
+
+	let { data }: Props = $props();
+
+	let host = $derived(page.url.origin);
+</script>
+
+<Table.Root class="w-full border border-zinc-800">
+	<Table.Header>
+		<Table.Row class="border-b border-zinc-800 bg-zinc-900">
+			<Table.Head
+				class="w-52 border-r border-zinc-800 px-4 py-2.5 text-xs font-medium tracking-widest text-zinc-500 uppercase"
+				>Slug</Table.Head
+			>
+			<Table.Head
+				class="border-r border-zinc-800 px-4 py-2.5 text-xs font-medium tracking-widest text-zinc-500 uppercase"
+				>URL</Table.Head
+			>
+			<Table.Head
+				class="w-36 border-r border-zinc-800 px-4 py-2.5 text-xs font-medium tracking-widest text-zinc-500 uppercase"
+				>When</Table.Head
+			>
+			<Table.Head
+				class="w-20 border-r border-zinc-800 px-4 py-2.5 text-center text-xs font-medium tracking-widest text-zinc-500 uppercase"
+				>Clicks</Table.Head
+			>
+			<Table.Head
+				class="w-20 px-4 py-2.5 text-center text-xs font-medium tracking-widest text-zinc-500 uppercase"
+				>Del</Table.Head
+			>
+		</Table.Row>
+	</Table.Header>
+	{#if data.length === 0}
+		<Table.Body>
+			<Table.Row class="bg-zinc-950">
+				<Table.Cell colspan={5} class="px-4 py-8 text-center text-xs text-zinc-600">
+					No short URLs yet.
+				</Table.Cell>
+			</Table.Row>
+		</Table.Body>
+	{:else}
+		<Table.Body>
+			{#each data as url, i}
+				<Table.Row
+					class="border-b border-zinc-800 bg-zinc-950 transition-colors last:border-b-0 hover:bg-zinc-900"
+				>
+					<Table.Cell class="border-r border-zinc-800 px-4 py-2.5 font-medium">
+						<button
+							type="button"
+							onclick={() => copyUrl(`${host}/${url.slug}`)}
+							class="cursor-pointer text-xs font-medium text-green-400 transition-colors select-none hover:text-green-300 active:text-green-500"
+						>
+							{url.slug}
+						</button>
+					</Table.Cell>
+					<Table.Cell class="border-r border-zinc-800 px-4 py-2.5">
+						<a
+							href={url.destination}
+							target="_blank"
+							class="line-clamp-1 text-xs break-all text-zinc-400 transition-colors hover:text-zinc-300"
+							>{url.destination}</a
+						>
+					</Table.Cell>
+					<Table.Cell class="border-r border-zinc-800 px-4 py-2.5 text-xs text-zinc-500">
+						{dayjs(url.createdAt).fromNow()}
+					</Table.Cell>
+					<Table.Cell
+						class="border-r border-zinc-800 px-4 py-2.5 text-center text-xs text-zinc-400"
+					>
+						{url.clicks}
+					</Table.Cell>
+					<Table.Cell class="px-4 py-2.5 text-center">
+						<button
+							onclick={() => deleteEntry(url.slug)}
+							class="btn btn-destructive inline-flex h-7 w-7 cursor-pointer items-center justify-center p-0"
+							><Trash2 size="14" /></button
+						>
+					</Table.Cell>
+				</Table.Row>
+			{/each}
+		</Table.Body>
+	{/if}
+</Table.Root>

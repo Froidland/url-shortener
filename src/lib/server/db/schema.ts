@@ -1,4 +1,4 @@
-import { relations, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { boolean, index, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
@@ -49,10 +49,6 @@ export const urls = pgTable(
 	}
 );
 
-export const urlsRelations = relations(urls, ({ many }) => ({
-	clicks: many(clicks)
-}));
-
 export const clicks = pgTable(
 	'clicks',
 	{
@@ -69,10 +65,3 @@ export const clicks = pgTable(
 		};
 	}
 );
-
-export const clicksRelations = relations(clicks, ({ one }) => ({
-	url: one(urls, {
-		fields: [clicks.urlSlug],
-		references: [urls.slug]
-	})
-}));

@@ -1,16 +1,15 @@
 import { db } from '$lib/server/db';
-import { urls } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
-import { and, eq, isNull } from 'drizzle-orm';
 
 export async function load({ params }) {
 	let url;
 	try {
-		url = await db.query.urls
-			.findFirst({
-				where: and(eq(urls.slug, params.slug), isNull(urls.deletedAt))
-			})
-			.execute();
+		url = await db.query.urls.findFirst({
+			where: {
+				slug: params.slug,
+				deletedAt: { isNull: true }
+			}
+		});
 	} catch (err) {
 		console.log(err);
 

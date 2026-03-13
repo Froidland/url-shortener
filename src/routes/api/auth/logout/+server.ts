@@ -1,34 +1,24 @@
-import { lucia } from '$lib/server/lucia';
+import { invalidateSession, createBlankSessionCookie, SESSION_COOKIE_NAME } from '$lib/server/auth';
 
 export async function GET({ locals, cookies }) {
-	const user = locals.user;
+	const session = locals.session;
 
-	if (!user) {
-		return new Response(null, {
-			status: 401
-		});
+	if (!session) {
+		return new Response(null, { status: 401 });
 	}
 
 	try {
-		await lucia.invalidateSession(user.id);
+		await invalidateSession(session.id);
 	} catch (error) {
 		console.error(error);
-
-		return new Response(null, {
-			status: 500
-		});
+		return new Response(null, { status: 500 });
 	}
 
-	const sessionCookie = lucia.createBlankSessionCookie();
-	cookies.set(sessionCookie.name, sessionCookie.value, {
-		path: '.',
-		...sessionCookie.attributes
-	});
+	const cookie = createBlankSessionCookie();
+	cookies.set(cookie.name, cookie.value, cookie.attributes);
 
 	return new Response(null, {
 		status: 302,
-		headers: {
-			Location: '/'
-		}
+		headers: { Location: '/' }
 	});
 }
