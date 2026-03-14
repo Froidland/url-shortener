@@ -28,12 +28,15 @@
 		{ iso: string; name: string; clicks?: number }
 	>;
 
-	const baseGeoJSON: Promise<CountryCollection> = fetch('/countries.geojson').then((r) => r.json());
+	let baseGeoJSON: Promise<CountryCollection> | null = null;
 
 	let geojson: CountryCollection | null = $state(null);
 
 	$effect(() => {
 		const counts = countsByCountry;
+		if (!baseGeoJSON) {
+			baseGeoJSON = fetch('/countries.geojson').then((r) => r.json());
+		}
 		baseGeoJSON.then((base) => {
 			geojson = {
 				...base,
