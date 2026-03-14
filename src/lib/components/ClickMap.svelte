@@ -59,7 +59,27 @@
 </script>
 
 <div class="border-t border-zinc-800">
-	{#if geojson}
+	{#if !geojson}
+		<div
+			class="relative flex h-[32rem] w-full items-center justify-center overflow-hidden bg-zinc-950"
+		>
+			<div
+				class="absolute inset-0 opacity-5"
+				style="background-image: linear-gradient(#71717a 1px, transparent 1px), linear-gradient(90deg, #71717a 1px, transparent 1px); background-size: 40px 40px;"
+			></div>
+			<div class="flex flex-col items-center gap-3">
+				<div class="flex gap-1">
+					{#each [0, 1, 2] as i}
+						<div
+							class="h-1 w-6 animate-pulse rounded-full bg-zinc-700"
+							style="animation-delay: {i * 150}ms"
+						></div>
+					{/each}
+				</div>
+				<span class="font-mono text-xs text-zinc-600">Loading map…</span>
+			</div>
+		</div>
+	{:else}
 		<MapLibre
 			class="h-[32rem] w-full"
 			style="https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json"
