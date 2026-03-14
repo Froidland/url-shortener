@@ -51,7 +51,37 @@ export const getUrls = query(schema, async ({ limit, offset }) => {
 	};
 });
 
-const deleteSchema = z.object({ slug: z.string() });
+const slugSchema = z.object({ slug: z.string() });
+
+export const getClicksByCountry = query(slugSchema, async ({ slug }) => {
+	const req = getRequestEvent();
+	const user = req.locals.user;
+
+	if (!user) {
+		error(401, 'Unauthorized');
+	}
+
+	const url = await db.query.urls.findFirst({
+		where: { slug, userId: user.id }
+	});
+
+	if (!url) {
+		error(404, 'URL not found');
+	}
+
+	const rows = await db
+		.select({ country: clicks.country, count: count() })
+		.from(clicks)
+		.where(eq(clicks.urlSlug, slug))
+		.groupBy(clicks.country);
+
+	return rows.map((r) => ({
+		country: r.country ?? 'unknown',
+		count: r.count
+	}));
+});
+
+const deleteSchema = slugSchema;
 
 export const deleteUrl = command(deleteSchema, async ({ slug }) => {
 	const req = getRequestEvent();
