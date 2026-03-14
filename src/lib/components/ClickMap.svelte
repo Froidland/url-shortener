@@ -10,15 +10,17 @@
 	import maplibregl from 'maplibre-gl';
 	import { getClicksByCountry } from '$lib/remote/urls.remote';
 
-	type Props = { slug: string };
-	let { slug }: Props = $props();
+	type CountryClick = { country: string; count: number };
 
-	let clicks = $derived(await getClicksByCountry({ slug }));
+	type Props = { slug: string; data?: never } | { data: CountryClick[]; slug?: never };
+
+	let { slug, data: dataProp }: Props = $props();
+
+	let remoteClicks = $derived(slug ? await getClicksByCountry({ slug }) : null);
+	let clicks = $derived(dataProp ?? remoteClicks ?? []);
 
 	let countsByCountry = $derived(
-		Object.fromEntries(
-			clicks.map((r: { country: string; count: number }) => [r.country.toUpperCase(), r.count])
-		)
+		Object.fromEntries(clicks.map((r: CountryClick) => [r.country.toUpperCase(), r.count]))
 	);
 
 	type CountryCollection = GeoJSON.FeatureCollection<
@@ -49,6 +51,8 @@
 
 	let hoveredFeature = $state.raw<maplibregl.MapGeoJSONFeature | undefined>(undefined);
 	let popupLngLat = $state.raw(new maplibregl.LngLat(0, 0));
+
+	let sourceId = $derived(slug ?? 'stats-map');
 </script>
 
 <div class="border-t border-zinc-800">
@@ -60,7 +64,7 @@
 			center={{ lng: 10, lat: 20 }}
 			attributionControl={false}
 		>
-			<GeoJSONSource id="countries-{slug}" data={geojson}>
+			<GeoJSONSource id="countries-{sourceId}" data={geojson}>
 				<FillLayer
 					paint={{
 						'fill-color': [

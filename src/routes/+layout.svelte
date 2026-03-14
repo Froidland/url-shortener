@@ -6,6 +6,7 @@
 	import { Tooltip } from 'bits-ui';
 	import ProfileDropdown from '$lib/components/ProfileDropdown.svelte';
 	import { navigating } from '$app/state';
+	import { resolve } from '$app/paths';
 
 	interface Props {
 		data: LayoutServerData;
@@ -35,14 +36,14 @@
 				<div class="flex items-center gap-4">
 					<a
 						class="flex items-center gap-1.5 text-xs text-zinc-400 transition-colors hover:text-zinc-100"
-						href="/"
+						href={resolve('/')}
 					>
 						<Home size="14" /> <span class="hidden sm:inline">Home</span>
 					</a>
 				</div>
 				<div class="flex items-center gap-2">
 					{#if !data.user.isLoggedIn}
-						<a href="/api/oauth/discord" class="btn btn-secondary gap-2 text-xs">
+						<a href={resolve('/api/oauth/discord')} class="btn btn-secondary gap-2 text-xs">
 							<DiscordIcon size="16" />
 							<span class="hidden sm:inline">Sign in with Discord</span>
 							<span class="sm:hidden">Sign in</span>

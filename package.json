@@ -51,6 +51,7 @@
 		"drizzle-orm": "1.0.0-beta.17-67b1795",
 		"formsnap": "^2.0.1",
 		"ioredis": "^5.10.0",
+		"layerchart": "2.0.0-next.46",
 		"maplibre-gl": "^5.20.1",
 		"postgres": "^3.4.8",
 		"svelte-maplibre-gl": "^1.0.3",

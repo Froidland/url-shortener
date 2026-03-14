@@ -1,7 +1,7 @@
 import { getRequestEvent, query, command } from '$app/server';
 import { db } from '$lib/server/db';
 import { cache } from '$lib/server/cache';
-import { and, desc, eq, isNull, count, sql } from 'drizzle-orm';
+import { and, desc, eq, isNull, count, sql, gte } from 'drizzle-orm';
 import { error, redirect } from '@sveltejs/kit';
 import { clicks, urls } from '$lib/server/db/schema';
 
@@ -80,6 +80,71 @@ export const getClicksByCountry = query(slugSchema, async ({ slug }) => {
 		count: r.count
 	}));
 });
+
+export const getUrlStats = query(
+	z.object({ slug: z.string(), days: z.number().min(7).max(365).default(30) }),
+	async ({ slug, days }) => {
+		const req = getRequestEvent();
+		const user = req.locals.user;
+
+		if (!user) error(401, 'Unauthorized');
+
+		const url = await db.query.urls.findFirst({ where: { slug, userId: user.id } });
+		if (!url) error(404, 'URL not found');
+
+		const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+		const [overTime, byCountry, byHour] = await Promise.all([
+			db
+				.select({
+					date: sql<string>`date_trunc('day', ${clicks.createdAt})::date::text`,
+					count: count()
+				})
+				.from(clicks)
+				.where(and(eq(clicks.urlSlug, slug), gte(clicks.createdAt, since)))
+				.groupBy(sql`date_trunc('day', ${clicks.createdAt})`)
+				.orderBy(sql`date_trunc('day', ${clicks.createdAt})`),
+
+			db
+				.select({ country: clicks.country, count: count() })
+				.from(clicks)
+				.where(and(eq(clicks.urlSlug, slug), gte(clicks.createdAt, since)))
+				.groupBy(clicks.country)
+				.orderBy(desc(count()))
+				.limit(15),
+
+			db
+				.select({
+					hour: sql<number>`extract(hour from ${clicks.createdAt})::int`,
+					count: count()
+				})
+				.from(clicks)
+				.where(and(eq(clicks.urlSlug, slug), gte(clicks.createdAt, since)))
+				.groupBy(sql`extract(hour from ${clicks.createdAt})`)
+				.orderBy(sql`extract(hour from ${clicks.createdAt})`)
+		]);
+
+		const lookup = Object.fromEntries(overTime.map((r) => [r.date, r.count]));
+		const filledDays = Array.from({ length: days }, (_, i) => {
+			const d = new Date(Date.now() - (days - 1 - i) * 24 * 60 * 60 * 1000);
+			const key = d.toISOString().slice(0, 10);
+			return { date: key, count: lookup[key] ?? 0 };
+		});
+
+		const hourLookup = Object.fromEntries(byHour.map((r) => [r.hour, r.count]));
+		const filledHours = Array.from({ length: 24 }, (_, h) => ({
+			hour: h,
+			count: hourLookup[h] ?? 0
+		}));
+
+		return {
+			url: { slug: url.slug, destination: url.destination },
+			overTime: filledDays,
+			byCountry: byCountry.map((r) => ({ country: r.country ?? 'Unknown', count: r.count })),
+			byHour: filledHours
+		};
+	}
+);
 
 const deleteSchema = slugSchema;
 

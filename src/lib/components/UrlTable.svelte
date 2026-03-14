@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Trash2, MapPin } from '$lib/components/icons';
+	import { Trash2, BarChart2 } from '$lib/components/icons';
 	import * as Table from '$lib/components/ui/table';
 	import { deleteUrl } from '$lib/remote/urls.remote';
+	import { resolve } from '$app/paths';
 	import { toast } from 'svelte-sonner';
-	import ClickMap from './ClickMap.svelte';
 	import Tooltip from './Tooltip.svelte';
 
 	const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
@@ -54,13 +54,7 @@
 	};
 
 	let { data }: Props = $props();
-
 	let host = $derived(page.url.origin);
-	let selectedSlug = $state<string | null>(null);
-
-	function toggleMap(slug: string) {
-		selectedSlug = selectedSlug === slug ? null : slug;
-	}
 </script>
 
 <Table.Root class="w-full border border-zinc-800">
@@ -84,7 +78,7 @@
 			>
 			<Table.Head
 				class="w-10 border-r border-zinc-800 px-4 py-2.5 text-center text-xs font-medium tracking-widest text-zinc-500 uppercase"
-				>Map</Table.Head
+				>Stats</Table.Head
 			>
 			<Table.Head
 				class="w-10 px-4 py-2.5 text-center text-xs font-medium tracking-widest text-zinc-500 uppercase"
@@ -104,10 +98,7 @@
 		<Table.Body>
 			{#each data as url}
 				<Table.Row
-					class="border-b border-zinc-800 bg-zinc-950 transition-colors last:border-b-0 hover:bg-zinc-900 {selectedSlug ===
-					url.slug
-						? 'bg-zinc-900'
-						: ''}"
+					class="border-b border-zinc-800 bg-zinc-950 transition-colors last:border-b-0 hover:bg-zinc-900"
 				>
 					<Table.Cell class="border-r border-zinc-800 px-4 py-2.5 font-medium">
 						<button
@@ -136,13 +127,11 @@
 						{url.clicks}
 					</Table.Cell>
 					<Table.Cell class="border-r border-zinc-800 px-4 py-2.5 text-center">
-						<button
-							onclick={() => toggleMap(url.slug)}
-							title="View click map"
-							class="inline-flex h-7 w-7 cursor-pointer items-center justify-center transition-colors {selectedSlug ===
-							url.slug
-								? 'text-green-400'
-								: 'text-zinc-600 hover:text-zinc-300'}"><MapPin size="14" /></button
+						<a
+							href={resolve('/urls/[slug]', { slug: url.slug })}
+							title="View stats"
+							class="inline-flex h-7 w-7 items-center justify-center text-zinc-600 transition-colors hover:text-zinc-300"
+							><BarChart2 size="14" /></a
 						>
 					</Table.Cell>
 					<Table.Cell class="px-4 py-2.5 text-center">
@@ -156,36 +145,6 @@
 						>
 					</Table.Cell>
 				</Table.Row>
-				{#if selectedSlug === url.slug}
-					<tr class="border-b border-zinc-800 last:border-b-0">
-						<td colspan={6} class="p-0">
-							<svelte:boundary>
-								<ClickMap slug={url.slug} />
-								{#snippet pending()}
-									<div
-										class="relative flex h-[32rem] w-full items-center justify-center overflow-hidden bg-zinc-950"
-									>
-										<div
-											class="absolute inset-0 opacity-5"
-											style="background-image: linear-gradient(#71717a 1px, transparent 1px), linear-gradient(90deg, #71717a 1px, transparent 1px); background-size: 40px 40px;"
-										></div>
-										<div class="flex flex-col items-center gap-3">
-											<div class="flex gap-1">
-												{#each [0, 1, 2] as i}
-													<div
-														class="h-1 w-6 animate-pulse rounded-full bg-zinc-700"
-														style="animation-delay: {i * 150}ms"
-													></div>
-												{/each}
-											</div>
-											<span class="font-mono text-xs text-zinc-600">Loading map…</span>
-										</div>
-									</div>
-								{/snippet}
-							</svelte:boundary>
-						</td>
-					</tr>
-				{/if}
 			{/each}
 		</Table.Body>
 	{/if}
