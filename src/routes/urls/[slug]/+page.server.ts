@@ -27,8 +27,7 @@ async function buildStats(slug: string, range: Range) {
 			.from(clicks)
 			.where(where)
 			.groupBy(clicks.country)
-			.orderBy(desc(count()))
-			.limit(15),
+			.orderBy(desc(count())),
 
 		db
 			.select({
@@ -41,17 +40,27 @@ async function buildStats(slug: string, range: Range) {
 			.orderBy(sql`extract(hour from ${clicks.createdAt})`)
 	]);
 
-	// For all time, use the actual date range from the data rather than filling gaps
+	const dayLookup = Object.fromEntries(overTime.map((r) => [r.date, r.count]));
 	let filledDays: { date: string; count: number }[];
+
 	if (range) {
-		const dayLookup = Object.fromEntries(overTime.map((r) => [r.date, r.count]));
 		filledDays = Array.from({ length: range }, (_, i) => {
 			const d = new Date(Date.now() - (range - 1 - i) * 24 * 60 * 60 * 1000);
 			const key = d.toISOString().slice(0, 10);
 			return { date: key, count: dayLookup[key] ?? 0 };
 		});
+	} else if (overTime.length > 0) {
+		const first = new Date(overTime[0].date);
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		const days = Math.round((today.getTime() - first.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+		filledDays = Array.from({ length: days }, (_, i) => {
+			const d = new Date(first.getTime() + i * 24 * 60 * 60 * 1000);
+			const key = d.toISOString().slice(0, 10);
+			return { date: key, count: dayLookup[key] ?? 0 };
+		});
 	} else {
-		filledDays = overTime.map((r) => ({ date: r.date, count: r.count }));
+		filledDays = [];
 	}
 
 	const hourLookup = Object.fromEntries(byHour.map((r) => [r.hour, r.count]));
