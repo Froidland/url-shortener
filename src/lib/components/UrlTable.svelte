@@ -122,8 +122,11 @@
 					<Table.Cell class="px-4 py-2.5 text-center">
 						<button
 							onclick={() => deleteEntry(url.slug)}
-							class="btn btn-destructive inline-flex h-7 w-7 cursor-pointer items-center justify-center p-0"
-							><Trash2 size="14" /></button
+							class="btn btn-destructive group inline-flex h-7 w-7 cursor-pointer items-center justify-center p-0"
+							><Trash2
+								size="14"
+								class="text-red-600 transition-colors group-hover:text-red-400"
+							/></button
 						>
 					</Table.Cell>
 				</Table.Row>
