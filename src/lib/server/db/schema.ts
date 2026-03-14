@@ -1,67 +1,45 @@
 import { sql } from 'drizzle-orm';
-import { boolean, index, pgTable, serial, timestamp, varchar } from 'drizzle-orm/pg-core';
+import { index, pgTable } from 'drizzle-orm/pg-core';
 
-export const users = pgTable('users', {
-	id: varchar('id', {
-		length: 24
-	}).primaryKey(),
+export const users = pgTable('users', (t) => ({
+	id: t.varchar({ length: 24 }).primaryKey(),
+	discordId: t.varchar({ length: 255 }).notNull(),
+	discordUsername: t.varchar({ length: 255 }).notNull(),
+	isAllowedCustomSlugs: t.boolean().default(false).notNull(),
+	createdAt: t.timestamp({ mode: 'date' }).notNull().defaultNow(),
+	updatedAt: t.timestamp({ mode: 'date' }).default(sql`now()`)
+}));
 
-	discordId: varchar('discord_id', { length: 255 }).notNull(),
-	discordUsername: varchar('discord_username', { length: 255 }).notNull(),
-
-	isAllowedCustomSlugs: boolean('is_allowed_custom_slugs').default(false).notNull(),
-
-	createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
-	updatedAt: timestamp('updated_at', { mode: 'date' }).default(sql`now()`)
-});
-
-export const sessions = pgTable('sessions', {
-	id: varchar('id', {
-		length: 255
-	}).primaryKey(),
-	userId: varchar('user_id', {
-		length: 24
-	})
+export const sessions = pgTable('sessions', (t) => ({
+	id: t.varchar({ length: 255 }).primaryKey(),
+	userId: t
+		.varchar({ length: 24 })
 		.notNull()
 		.references(() => users.id),
-	expiresAt: timestamp('expires_at').notNull()
-});
+	expiresAt: t.timestamp().notNull()
+}));
 
 export const urls = pgTable(
 	'urls',
-	{
-		slug: varchar('slug', { length: 255 }).primaryKey(),
-
-		destination: varchar('destination', { length: 2048 }).notNull(),
-
-		userId: varchar('user_id', { length: 24 }).references(() => users.id, {
-			onDelete: 'set null'
-		}),
-
-		createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
-		deletedAt: timestamp('deleted_at', { mode: 'date' })
-	},
-	(self) => {
-		return {
-			slugIndex: index('slug_idx').on(self.slug),
-			userIdIndex: index('user_id_idx').on(self.userId)
-		};
-	}
+	(t) => ({
+		slug: t.varchar({ length: 255 }).primaryKey(),
+		destination: t.varchar({ length: 2048 }).notNull(),
+		userId: t.varchar({ length: 24 }).references(() => users.id, { onDelete: 'set null' }),
+		createdAt: t.timestamp({ mode: 'date' }).notNull().defaultNow(),
+		deletedAt: t.timestamp({ mode: 'date' })
+	}),
+	(t) => [index('slug_idx').on(t.slug), index('user_id_idx').on(t.userId)]
 );
 
 export const clicks = pgTable(
 	'clicks',
-	{
-		id: serial('id').primaryKey(),
-		urlSlug: varchar('url_slug', { length: 255 }).references(() => urls.slug),
-		ip: varchar('ip', { length: 255 }),
-		country: varchar('country', { length: 255 }),
-		city: varchar('city', { length: 255 }),
-		createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow()
-	},
-	(self) => {
-		return {
-			urlSlugIndex: index('url_slug_idx').on(self.urlSlug)
-		};
-	}
+	(t) => ({
+		id: t.serial().primaryKey(),
+		urlSlug: t.varchar({ length: 255 }).references(() => urls.slug),
+		ip: t.varchar({ length: 255 }),
+		country: t.varchar({ length: 255 }),
+		city: t.varchar({ length: 255 }),
+		createdAt: t.timestamp({ mode: 'date' }).notNull().defaultNow()
+	}),
+	(t) => [index('url_slug_idx').on(t.urlSlug)]
 );

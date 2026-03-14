@@ -8,5 +8,6 @@ export const db = drizzle({
 	connection: env.PRIVATE_DATABASE_URL,
 	schema,
 	relations,
+	casing: 'snake_case',
 	logger: dev
 });
