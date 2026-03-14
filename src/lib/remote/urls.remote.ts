@@ -17,7 +17,7 @@ export const getUrls = query(schema, async ({ limit, offset }) => {
 	const user = req.locals.user;
 
 	if (!user) {
-		redirect(302, '/api/auth/login/discord');
+		redirect(302, '/api/oauth/discord');
 	}
 
 	const urlData = db
