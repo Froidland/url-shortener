@@ -159,6 +159,18 @@
 	}
 }
 
+@keyframes progress {
+	0% {
+		transform: translateX(-100%);
+	}
+	50% {
+		transform: translateX(150%);
+	}
+	100% {
+		transform: translateX(400%);
+	}
+}
+
 .click-map-popup .maplibregl-popup-content {
 	background: #09090b;
 	border: 1px solid #3f3f46;

@@ -5,6 +5,7 @@
 	import { Toaster } from 'svelte-sonner';
 	import { Tooltip } from 'bits-ui';
 	import ProfileDropdown from '$lib/components/ProfileDropdown.svelte';
+	import { navigating } from '$app/state';
 
 	interface Props {
 		data: LayoutServerData;
@@ -15,6 +16,11 @@
 </script>
 
 <Tooltip.Provider>
+	{#if navigating.to}
+		<div class="fixed inset-x-0 top-0 z-50 h-px overflow-hidden bg-zinc-800">
+			<div class="h-full w-1/3 animate-[progress_1s_ease-in-out_infinite] bg-green-400"></div>
+		</div>
+	{/if}
 	<Toaster
 		position="top-center"
 		theme="dark"
