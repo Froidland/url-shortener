@@ -147,6 +147,11 @@
 		font-size: 0.875rem;
 		line-height: 1.6;
 		-webkit-font-smoothing: antialiased;
+		color-scheme: dark;
+		/* layerchart tooltip variables */
+		--color-surface-content: #a1a1aa;
+		--color-surface-100: #09090b;
+		--color-surface-300: #18181b;
 	}
 
 	::selection {

@@ -30,15 +30,39 @@
 	let hasCountryData = $derived(countryData.length > 0);
 
 	const axisProps = {
-		classes: {
-			tickLabel: 'fill-zinc-400 text-[11px] font-mono',
-			rule: 'stroke-zinc-800',
-			tick: 'stroke-zinc-800'
+		tickLabelProps: {
+			style:
+				'fill: #a1a1aa; font-size: 12px; font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;'
+		}
+	};
+
+	const gridProps = { style: 'stroke: #27272a;' };
+
+	const tooltipProps = {
+		root: {
+			variant: 'none' as const,
+			props: {
+				container: {
+					style:
+						'background: #09090b; border: 1px solid #3f3f46; border-radius: 2px; font-family: ui-monospace, monospace; font-size: 12px; padding: 8px 12px; box-shadow: none; min-width: 100px;'
+				}
+			}
+		},
+		header: {
+			style: 'color: #a1a1aa; margin-bottom: 2px; font-weight: normal;'
+		},
+		item: {
+			classes: {
+				root: '',
+				label: '',
+				value: ''
+			},
+			style: 'color: #4ade80;'
 		}
 	};
 </script>
 
-<div class="space-y-8" style="--color-surface-content: #d4d4d8; --color-surface-100: #09090b;">
+<div class="space-y-8">
 	<section>
 		<h2 class="mb-3 text-xs font-medium tracking-widest text-zinc-500 uppercase">
 			Clicks over time
@@ -52,14 +76,15 @@
 						y="count"
 						series={[{ key: 'count', color: '#4ade80' }]}
 						props={{
-							spline: { class: 'stroke-green-400 stroke-[1.5]' },
+							spline: { style: 'stroke: #4ade80; stroke-width: 1.5;' },
 							xAxis: {
 								...axisProps,
 								format: (d: Date) =>
 									new Date(d).toLocaleDateString('en', { month: 'short', day: 'numeric' })
 							},
 							yAxis: axisProps,
-							grid: { class: 'stroke-zinc-800' }
+							grid: gridProps,
+							tooltip: tooltipProps
 						}}
 						rule={false}
 						grid
@@ -87,7 +112,8 @@
 						padding={{ left: countryPaddingLeft, bottom: 24, top: 8, right: 16 }}
 						props={{
 							xAxis: axisProps,
-							yAxis: axisProps
+							yAxis: axisProps,
+							tooltip: tooltipProps
 						}}
 						rule={false}
 						grid={false}
