@@ -5,6 +5,7 @@
 	import { deleteUrl } from '$lib/remote/urls.remote';
 	import { toast } from 'svelte-sonner';
 	import ClickMap from './ClickMap.svelte';
+	import Tooltip from './Tooltip.svelte';
 
 	const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
 
@@ -125,7 +126,9 @@
 						>
 					</Table.Cell>
 					<Table.Cell class="border-r border-zinc-800 px-4 py-2.5 text-xs text-zinc-500">
-						{fromNow(url.createdAt)}
+						<Tooltip text={url.createdAt.toLocaleString()}>
+							{fromNow(url.createdAt)}
+						</Tooltip>
 					</Table.Cell>
 					<Table.Cell
 						class="border-r border-zinc-800 px-4 py-2.5 text-center text-xs text-zinc-400"
