@@ -4,10 +4,16 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@internationalized/date': ^3.12.0
+
 importers:
 
   .:
     dependencies:
+      '@internationalized/date':
+        specifier: ^3.12.0
+        version: 3.12.0
       arctic:
         specifier: ^1.9.2
         version: 1.9.2
@@ -80,7 +86,7 @@ importers:
         version: 8.57.0(eslint@10.0.3(jiti@2.6.1))(typescript@5.9.3)
       bits-ui:
         specifier: ^2.16.3
-        version: 2.16.3(@internationalized/date@3.10.1)(@sveltejs/kit@2.55.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.53.11)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)(typescript@5.9.3)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)
+        version: 2.16.3(@internationalized/date@3.12.0)(@sveltejs/kit@2.55.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.53.11)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)(typescript@5.9.3)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)
       drizzle-kit:
         specifier: 1.0.0-beta.17-67b1795
         version: 1.0.0-beta.17-67b1795
@@ -616,8 +622,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@internationalized/date@3.10.1':
-    resolution: {integrity: sha512-oJrXtQiAXLvT9clCf1K4kxp3eKsQhIaZqxEyowkBcsvZDdZkbWrVmnGknxs5flTD0VGsxrxKgBCZty1EzoiMzA==}
+  '@internationalized/date@3.12.0':
+    resolution: {integrity: sha512-/PyIMzK29jtXaGU23qTvNZxvBXRtKbNnGDFD+PY6CZw/Y8Ex8pFUzkuCJCG9aOqmShjqhS9mPqP6Dk5onQY8rQ==}
 
   '@ioredis/commands@1.5.1':
     resolution: {integrity: sha512-JH8ZL/ywcJyR9MmJ5BNqZllXNZQqQbnVZOqpPQqE1vHiFgAw4NHbvE0FOduNU8IX9babitBT46571OnPTT0Zcw==}
@@ -1567,7 +1573,7 @@ packages:
     resolution: {integrity: sha512-5hJ5dEhf5yPzkRFcxzgQHScGodeo0gK0MUUXrdLlRHWaBOBGZiacWLG96j/wwFatKwZvouw7q+sn14i0fx3RIg==}
     engines: {node: '>=20'}
     peerDependencies:
-      '@internationalized/date': ^3.8.1
+      '@internationalized/date': ^3.12.0
       svelte: ^5.33.0
 
   bl@6.1.6:
@@ -3565,7 +3571,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@internationalized/date@3.10.1':
+  '@internationalized/date@3.12.0':
     dependencies:
       '@swc/helpers': 0.5.12
 
@@ -4391,11 +4397,11 @@ snapshots:
 
   bignumber.js@9.3.1: {}
 
-  bits-ui@2.16.3(@internationalized/date@3.10.1)(@sveltejs/kit@2.55.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.53.11)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)(typescript@5.9.3)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11):
+  bits-ui@2.16.3(@internationalized/date@3.12.0)(@sveltejs/kit@2.55.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.53.11)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)(typescript@5.9.3)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11):
     dependencies:
       '@floating-ui/core': 1.7.3
       '@floating-ui/dom': 1.7.4
-      '@internationalized/date': 3.10.1
+      '@internationalized/date': 3.12.0
       esm-env: 1.2.2
       runed: 0.35.1(@sveltejs/kit@2.55.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.53.11)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)(typescript@5.9.3)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)
       svelte: 5.53.11

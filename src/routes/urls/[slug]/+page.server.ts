@@ -1,17 +1,16 @@
 import { db } from '$lib/server/db';
 import { clicks, urls } from '$lib/server/db/schema';
-import { and, desc, eq, gte, count, sql } from 'drizzle-orm';
+import { and, desc, eq, gte, lte, count, sql } from 'drizzle-orm';
 import { error, redirect } from '@sveltejs/kit';
 
-const RANGE_OPTIONS = [7, 30, 90, null] as const;
-type Range = (typeof RANGE_OPTIONS)[number]; // null = all time
-
-async function buildStats(slug: string, range: Range) {
-	const since = range ? new Date(Date.now() - range * 24 * 60 * 60 * 1000) : null;
+async function buildStats(slug: string, from: Date | null, to: Date | null) {
 	const base = eq(clicks.urlSlug, slug);
-	const where = since ? and(base, gte(clicks.createdAt, since)) : base;
+	const conditions = [base];
+	if (from) conditions.push(gte(clicks.createdAt, from));
+	if (to) conditions.push(lte(clicks.createdAt, to));
+	const where = and(...conditions);
 
-	const [overTime, byCountry, byHour] = await Promise.all([
+	const [overTime, byCountry] = await Promise.all([
 		db
 			.select({
 				date: sql<string>`date_trunc('day', ${clicks.createdAt})::date::text`,
@@ -27,25 +26,25 @@ async function buildStats(slug: string, range: Range) {
 			.from(clicks)
 			.where(where)
 			.groupBy(clicks.country)
-			.orderBy(desc(count())),
-
-		db
-			.select({
-				hour: sql<number>`extract(hour from ${clicks.createdAt})::int`,
-				count: count()
-			})
-			.from(clicks)
-			.where(where)
-			.groupBy(sql`extract(hour from ${clicks.createdAt})`)
-			.orderBy(sql`extract(hour from ${clicks.createdAt})`)
+			.orderBy(desc(count()))
 	]);
 
 	const dayLookup = Object.fromEntries(overTime.map((r) => [r.date, r.count]));
 	let filledDays: { date: string; count: number }[];
 
-	if (range) {
-		filledDays = Array.from({ length: range }, (_, i) => {
-			const d = new Date(Date.now() - (range - 1 - i) * 24 * 60 * 60 * 1000);
+	if (from && to) {
+		const days = Math.round((to.getTime() - from.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+		filledDays = Array.from({ length: days }, (_, i) => {
+			const d = new Date(from.getTime() + i * 24 * 60 * 60 * 1000);
+			const key = d.toISOString().slice(0, 10);
+			return { date: key, count: dayLookup[key] ?? 0 };
+		});
+	} else if (from) {
+		const today = new Date();
+		today.setHours(23, 59, 59, 999);
+		const days = Math.round((today.getTime() - from.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+		filledDays = Array.from({ length: days }, (_, i) => {
+			const d = new Date(from.getTime() + i * 24 * 60 * 60 * 1000);
 			const key = d.toISOString().slice(0, 10);
 			return { date: key, count: dayLookup[key] ?? 0 };
 		});
@@ -63,13 +62,16 @@ async function buildStats(slug: string, range: Range) {
 		filledDays = [];
 	}
 
-	const hourLookup = Object.fromEntries(byHour.map((r) => [r.hour, r.count]));
-
 	return {
 		overTime: filledDays,
-		byCountry: byCountry.map((r) => ({ country: r.country ?? 'Unknown', count: r.count })),
-		byHour: Array.from({ length: 24 }, (_, h) => ({ hour: h, count: hourLookup[h] ?? 0 }))
+		byCountry: byCountry.map((r) => ({ country: r.country ?? 'Unknown', count: r.count }))
 	};
+}
+
+function parseDate(str: string | null): Date | null {
+	if (!str || !/^\d{4}-\d{2}-\d{2}$/.test(str)) return null;
+	const d = new Date(str + 'T00:00:00.000Z');
+	return isNaN(d.getTime()) ? null : d;
 }
 
 export async function load({ locals, params, url }) {
@@ -81,20 +83,23 @@ export async function load({ locals, params, url }) {
 
 	if (!urlRow) error(404, 'URL not found');
 
-	const rawDays = url.searchParams.get('days');
-	const range: Range =
-		rawDays === 'all'
-			? null
-			: [7, 30, 90].includes(Number(rawDays))
-				? (Number(rawDays) as Range)
-				: 30;
+	const rawFrom = url.searchParams.get('from');
+	const allTime = rawFrom === 'all';
+	const from = allTime ? null : parseDate(rawFrom);
+	// Default: last 30 days (only when no from param at all)
+	const defaultFrom = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+	defaultFrom.setHours(0, 0, 0, 0);
+	const effectiveFrom = allTime ? null : (from ?? defaultFrom);
 
-	const stats = await buildStats(params.slug, range);
+	const to = parseDate(url.searchParams.get('to'));
+	const effectiveTo = to ? new Date(to.getTime() + 24 * 60 * 60 * 1000 - 1) : null;
+
+	const stats = await buildStats(params.slug, effectiveFrom, effectiveTo);
 
 	return {
 		url: { slug: urlRow.slug, destination: urlRow.destination },
-		range,
-		rangeOptions: RANGE_OPTIONS,
+		from: allTime ? 'all' : effectiveFrom!.toISOString().slice(0, 10),
+		to: effectiveTo ? effectiveTo.toISOString().slice(0, 10) : null,
 		...stats
 	};
 }

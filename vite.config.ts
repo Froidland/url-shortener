@@ -4,6 +4,12 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig(() => {
 	return {
-		plugins: [tailwindcss(), sveltekit()]
+		plugins: [tailwindcss(), sveltekit()],
+		optimizeDeps: {
+			include: ['@internationalized/date']
+		},
+		resolve: {
+			dedupe: ['@internationalized/date']
+		}
 	};
 });
