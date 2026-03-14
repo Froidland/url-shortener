@@ -17,9 +17,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      dayjs:
-        specifier: ^1.11.20
-        version: 1.11.20
       dotenv:
         specifier: ^17.3.1
         version: 17.3.1
@@ -35,9 +32,9 @@ importers:
       postgres:
         specifier: ^3.4.8
         version: 3.4.8
-      svelte-french-toast:
-        specifier: ^1.2.0
-        version: 1.2.0(svelte@5.53.11)
+      svelte-sonner:
+        specifier: ^1.1.0
+        version: 1.1.0(svelte@5.53.11)
       sveltekit-superforms:
         specifier: ^2.30.0
         version: 2.30.0(@sveltejs/kit@2.55.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.53.11)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)(typescript@5.9.3)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(@types/json-schema@7.0.15)(svelte@5.53.11)(typescript@5.9.3)
@@ -2551,6 +2548,11 @@ packages:
     resolution: {integrity: sha512-DPe5pVFaAsinSaV6QjQ6gdiedWDcRCbUuiQfQa2wmWV7+xC9bGulGI8+TdRmoFkAPaBXk8CrAbnlY2ISniJ47Q==}
     engines: {node: '>=18'}
 
+  runed@0.28.0:
+    resolution: {integrity: sha512-k2xx7RuO9hWcdd9f+8JoBeqWtYrm5CALfgpkg2YDB80ds/QE4w0qqu34A7fqiAwiBBSBQOid7TLxwxVC27ymWQ==}
+    peerDependencies:
+      svelte: ^5.7.0
+
   runed@0.35.1:
     resolution: {integrity: sha512-2F4Q/FZzbeJTFdIS/PuOoPRSm92sA2LhzTnv6FXhCoENb3huf5+fDuNOg1LNvGOouy3u/225qxmuJvcV3IZK5Q==}
     peerDependencies:
@@ -2649,10 +2651,10 @@ packages:
       svelte:
         optional: true
 
-  svelte-french-toast@1.2.0:
-    resolution: {integrity: sha512-5PW+6RFX3xQPbR44CngYAP1Sd9oCq9P2FOox4FZffzJuZI2mHOB7q5gJBVnOiLF5y3moVGZ7u2bYt7+yPAgcEQ==}
+  svelte-sonner@1.1.0:
+    resolution: {integrity: sha512-3lYM6ZIqWe+p9vwwWHGWP/ZdvHiUtzURsud2quIxivrX4rvpXh6i+geBGn0m3JS6KwW6W8VgbOl3xQMcDuh6gg==}
     peerDependencies:
-      svelte: ^3.57.0 || ^4.0.0
+      svelte: ^5.0.0
 
   svelte-toolbelt@0.10.6:
     resolution: {integrity: sha512-YWuX+RE+CnWYx09yseAe4ZVMM7e7GRFZM6OYWpBKOb++s+SQ8RBIMMe+Bs/CznBMc0QPLjr+vDBxTAkozXsFXQ==}
@@ -2665,11 +2667,6 @@ packages:
     engines: {node: '>=18', pnpm: '>=8.7.0'}
     peerDependencies:
       svelte: ^5.0.0-next.126
-
-  svelte-writable-derived@3.1.1:
-    resolution: {integrity: sha512-w4LR6/bYZEuCs7SGr+M54oipk/UQKtiMadyOhW0PTwAtJ/Ai12QS77sLngEcfBx2q4H8ZBQucc9ktSA5sUGZWw==}
-    peerDependencies:
-      svelte: ^3.2.1 || ^4.0.0-next.1 || ^5.0.0-next.94
 
   svelte@5.53.11:
     resolution: {integrity: sha512-GYmqRjRhJYLQBonfdfGAt28gkfWEShrtXKGXcFGneXi502aBE+I1dJcs/YQriByvP6xqXRz/OdBGC6tfvUQHyQ==}
@@ -4117,7 +4114,8 @@ snapshots:
 
   cssesc@3.0.0: {}
 
-  dayjs@1.11.20: {}
+  dayjs@1.11.20:
+    optional: true
 
   debug@4.4.3:
     dependencies:
@@ -4967,6 +4965,11 @@ snapshots:
 
   run-applescript@7.1.0: {}
 
+  runed@0.28.0(svelte@5.53.11):
+    dependencies:
+      esm-env: 1.2.2
+      svelte: 5.53.11
+
   runed@0.35.1(@sveltejs/kit@2.55.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.53.11)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)(typescript@5.9.3)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11):
     dependencies:
       dequal: 2.0.3
@@ -5054,10 +5057,10 @@ snapshots:
     optionalDependencies:
       svelte: 5.53.11
 
-  svelte-french-toast@1.2.0(svelte@5.53.11):
+  svelte-sonner@1.1.0(svelte@5.53.11):
     dependencies:
+      runed: 0.28.0(svelte@5.53.11)
       svelte: 5.53.11
-      svelte-writable-derived: 3.1.1(svelte@5.53.11)
 
   svelte-toolbelt@0.10.6(@sveltejs/kit@2.55.0(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@7.0.0(svelte@5.53.11)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11)(typescript@5.9.3)(vite@8.0.0(@types/node@24.10.12)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.5.0)))(svelte@5.53.11):
     dependencies:
@@ -5072,10 +5075,6 @@ snapshots:
     dependencies:
       clsx: 2.1.1
       style-to-object: 1.0.14
-      svelte: 5.53.11
-
-  svelte-writable-derived@3.1.1(svelte@5.53.11):
-    dependencies:
       svelte: 5.53.11
 
   svelte@5.53.11:

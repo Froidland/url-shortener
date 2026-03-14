@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import toast from 'svelte-french-toast';
+	import { toast } from 'svelte-sonner';
 	import type { PageData } from './$types';
 	import { superForm } from 'sveltekit-superforms';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
@@ -10,19 +10,12 @@
 	async function copyUrl(url: string) {
 		try {
 			await navigator.clipboard.writeText(url);
-		} catch (error) {
-			toast.error('An error occurred while copying the URL.', {
-				style:
-					'background: #09090b; color: #f4f4f5; border: 1px solid #27272a; border-radius: 2px; font-family: ui-monospace, monospace; font-size: 0.8rem;'
-			});
-
+		} catch {
+			toast.error('An error occurred while copying the URL.');
 			return;
 		}
 
-		toast.success('URL copied!', {
-			style:
-				'background: #09090b; color: #f4f4f5; border: 1px solid #27272a; font-family: ui-monospace, monospace; font-size: 0.8rem; border-radius: 2px;'
-		});
+		toast.success('URL copied!');
 	}
 
 	type Props = {

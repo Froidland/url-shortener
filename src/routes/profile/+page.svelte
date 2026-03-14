@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import dayJs from 'dayjs';
-	import relativeTime from 'dayjs/plugin/relativeTime';
 	import UrlTable from '$lib/components/UrlTable.svelte';
 	import { getUrls } from '$lib/remote/urls.remote';
-	dayJs.extend(relativeTime);
 
 	let limit = $derived(Number(page.url.searchParams.get('limit')) || 10);
 	let offset = $derived(Number(page.url.searchParams.get('offset')) || 0);

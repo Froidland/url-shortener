@@ -2,7 +2,7 @@
 	import '../app.css';
 	import type { LayoutServerData } from './$types';
 	import { DiscordIcon, Home } from '$lib/components/icons';
-	import { Toaster } from 'svelte-french-toast';
+	import { Toaster } from 'svelte-sonner';
 	import ProfileDropdown from '$lib/components/ProfileDropdown.svelte';
 
 	interface Props {
@@ -13,7 +13,14 @@
 	let { data, children }: Props = $props();
 </script>
 
-<Toaster />
+<Toaster
+	position="top-center"
+	theme="dark"
+	toastOptions={{
+		style:
+			'background: #09090b; color: #f4f4f5; border: 1px solid #27272a; border-radius: 2px; font-family: ui-monospace, monospace; font-size: 0.8rem;'
+	}}
+/>
 <div class="flex min-h-screen flex-col">
 	<nav class="border-b border-zinc-800 bg-zinc-950">
 		<div class="container mx-auto flex h-12 items-center justify-between px-6 2xl:max-w-350">

@@ -3,42 +3,44 @@
 	import { Trash2 } from '$lib/components/icons';
 	import * as Table from '$lib/components/ui/table';
 	import { deleteUrl } from '$lib/remote/urls.remote';
-	import dayjs from 'dayjs';
-	import relativeTime from 'dayjs/plugin/relativeTime';
-	import toast from 'svelte-french-toast';
-	dayjs.extend(relativeTime);
+	import { toast } from 'svelte-sonner';
+
+	const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+	function fromNow(date: Date): string {
+		const seconds = Math.round((date.getTime() - Date.now()) / 1000);
+		const units: [Intl.RelativeTimeFormatUnit, number][] = [
+			['year', 60 * 60 * 24 * 365],
+			['month', 60 * 60 * 24 * 30],
+			['week', 60 * 60 * 24 * 7],
+			['day', 60 * 60 * 24],
+			['hour', 60 * 60],
+			['minute', 60],
+			['second', 1]
+		];
+		for (const [unit, threshold] of units) {
+			if (Math.abs(seconds) >= threshold) return rtf.format(Math.round(seconds / threshold), unit);
+		}
+		return 'just now';
+	}
 
 	async function deleteEntry(slug: string) {
-		toast.promise(
-			deleteUrl({ slug }),
-			{
-				loading: 'Deleting URL...',
-				success: 'URL deleted!',
-				error: 'An error occurred while deleting the URL.'
-			},
-			{
-				style:
-					'background: #09090b; color: #f4f4f5; border: 1px solid #27272a; border-radius: 2px; font-family: ui-monospace, monospace; font-size: 0.8rem;'
-			}
-		);
+		toast.promise(deleteUrl({ slug }), {
+			loading: 'Deleting URL...',
+			success: 'URL deleted!',
+			error: 'An error occurred while deleting the URL.'
+		});
 	}
 
 	async function copyUrl(url: string) {
 		try {
 			await navigator.clipboard.writeText(url);
-		} catch (error) {
-			toast.error('An error occurred while copying the URL.', {
-				style:
-					'background: #09090b; color: #f4f4f5; border: 1px solid #27272a; border-radius: 2px; font-family: ui-monospace, monospace; font-size: 0.8rem;'
-			});
-
+		} catch {
+			toast.error('An error occurred while copying the URL.');
 			return;
 		}
 
-		toast.success('URL copied!', {
-			style:
-				'background: #09090b; color: #f4f4f5; border: 1px solid #27272a; border-radius: 2px; font-family: ui-monospace, monospace; font-size: 0.8rem;'
-		});
+		toast.success('URL copied!');
 	}
 
 	type Props = {
@@ -112,7 +114,7 @@
 						>
 					</Table.Cell>
 					<Table.Cell class="border-r border-zinc-800 px-4 py-2.5 text-xs text-zinc-500">
-						{dayjs(url.createdAt).fromNow()}
+						{fromNow(url.createdAt)}
 					</Table.Cell>
 					<Table.Cell
 						class="border-r border-zinc-800 px-4 py-2.5 text-center text-xs text-zinc-400"
